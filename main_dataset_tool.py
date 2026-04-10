@@ -146,12 +146,52 @@ class DatasetWorker(QThread):
         self.log("\n🎉 U-Net 格式数据集生成完毕！")
         self.finish_signal.emit(True, "U-Net 数据集处理成功")
 
+    # ------------------ 生成 data.yaml ------------------
+    def generate_yaml(self, class_map):
+        yaml_path = os.path.join(self.out_dir, "data.yaml")
+        abs_out_dir = os.path.abspath(self.out_dir).replace("\\", "/")
+
+        train_path = f"{abs_out_dir}/images/train"
+        val_path = f"{abs_out_dir}/images/val"
+        test_path = f"{abs_out_dir}/images/test"
+
+        nc = len(class_map)
+        names_dict = {v: k for k, v in class_map.items()}
+        yaml_content = []
+        yaml_content.append(f"# Train and Val data path")
+        yaml_content.append(f"train: {train_path}")
+        yaml_content.append(f"val: {val_path}")
+        if self.test_r > 0:
+            yaml_content.append(f"test: {test_path}")
+
+        yaml_content.append(f"\n# Number of classes")
+        yaml_content.append(f"nc: {nc}")
+
+        yaml_content.append(f"\n# Class names")
+        yaml_content.append(f"names:")
+        for i in range(nc):
+            yaml_content.append(f"  {i}: {names_dict[i]}")
+
+        with open(yaml_path, 'w', encoding='utf-8') as f:
+            f.write("\n".join(yaml_content))
+
+        self.log(f"📝 已自动生成配置文件: {yaml_path}")
+
     # ------------------ YOLO 纯划分 ------------------
     def process_yolo_split(self):
         valid_pairs = self.get_valid_pairs(('.jpg', '.png', '.bmp'), ('.txt',))
         if not valid_pairs:
             self.finish_signal.emit(False, "未找到成对的图片和TXT！")
             return
+
+        class_map = {}
+        classes_txt = os.path.join(self.ann_dir, "classes.txt")
+        if os.path.exists(classes_txt):
+            with open(classes_txt, 'r', encoding='utf-8') as f:
+                for i, line in enumerate(f):
+                    if line.strip(): class_map[line.strip()] = i
+        else:
+            class_map = {"class_0": 0}
 
         self.log(f"✅ 找到 {len(valid_pairs)} 组有效数据。")
         train_p, val_p, test_p = self.split_data(valid_pairs)
@@ -165,6 +205,7 @@ class DatasetWorker(QThread):
                 shutil.copy(img_p, os.path.join(self.out_dir, 'images', split_name, os.path.basename(img_p)))
                 shutil.copy(txt_p, os.path.join(self.out_dir, 'labels', split_name, os.path.basename(txt_p)))
 
+        self.generate_yaml(class_map)
         self.log("\n🎉 YOLO 数据集划分完毕！")
         self.finish_signal.emit(True, "YOLO 划分处理成功")
 
@@ -298,6 +339,7 @@ class DatasetWorker(QThread):
         with open(os.path.join(self.out_dir, 'classes.txt'), 'w', encoding='utf-8') as f:
             for c in sorted(class_map.keys(), key=lambda k: class_map[k]): f.write(f"{c}\n")
 
+        self.generate_yaml(class_map)
         self.log("\n🎉 JSON/XML 转 YOLO 完成！")
         self.finish_signal.emit(True, "格式转换与划分成功")
 
