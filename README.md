@@ -11,15 +11,15 @@
 系统基于 PySide6 构建，集成了最新一代的 **Segment Anything Model 3 (SAM3)**，基于 SAM3 的**点提示与提示词提示**功能，我于是开发了智能点选和提示词选取功能，当系统开启了 SAM3 智能标注功能时候，可以智能<font color=#FFA500>**点选**</font>进行标注或者<font color=#FFA500>**提示词**</font>自动分割，除了点（Point）标注不可以使用 SAM3 智能标注，剩下的➡️矩形（HBB）、多边形（Polygon）、 OBB 旋转框标注都支持开启智能标注，标注完系统还➡️<font color=#FFA500>支持数据集转换和划分。</font>
 
 
-| <font color = #FF0000>功能 | 界面演示                                                     |
-| -------------------------- | ------------------------------------------------------------ |
-| 多边形标注—点选            | ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6d1bb333f97942a3b361743bb1124233.png) |
-| 多边形标注—点选结果        | ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/509b8eccef644d1587e73846ddc5d9fc.png) |
-| obb标注—点选               | ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/acb3a590f9a54659a09621f2bf37d439.png) |
-| obb标注—点选结果           | ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/14e25f09a77547888e56320f23a07515.png) |
-| 目标检测—点选结果          | ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d5a3b70fdf3b404e82bc5d3e42e6c276.png) |
-| 目标检测—提示词结果        | ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5a08e9a981334d128cd21b3684750b66.png) |
-| 数据集处理系统             | ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/db24e40a1d2d4ccca7c1ba9cd8968fde.png) |
+| <font color = #FF0000>功能 | 界面演示                                |
+| -------------------------- | --------------------------------------- |
+| 多边形标注—点选            | ![在这里插入图片描述](assets/img.png)   |
+| 多边形标注—点选结果        | ![在这里插入图片描述](assets/img_1.png) |
+| obb标注—点选               | ![在这里插入图片描述](assets/img_2.png) |
+| obb标注—点选结果           | ![在这里插入图片描述](assets/img_3.png) |
+| 目标检测—点选结果          | ![在这里插入图片描述](assets/img_4.png) |
+| 目标检测—提示词结果        | ![在这里插入图片描述](assets/img_5.png) |
+| 数据集处理系统             | ![在这里插入图片描述](assets/img_6.png) |
 
 
 
