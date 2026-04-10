@@ -1,0 +1,76 @@
+QMainWindow {
+    background-color: #f8f9fa;
+}
+QToolBar {
+    background-color: #ffffff;
+    border-right: 1px solid #e9ecef;
+    padding: 5px;
+    spacing: 8px;
+}
+QToolButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 8px;
+    color: #495057;
+    font-size: 13px;
+    font-weight: bold;
+}
+QToolButton:hover {
+    background-color: #f1f3f5;
+}
+QToolButton:checked {
+    background-color: #e7f5ff;
+    color: #1c7ed6;
+}
+/* SAM按钮样式 - 未选中状态 */
+QToolButton#samAction {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    color: #495057;
+}
+/* SAM按钮样式 - 选中状态（开启智能标注） */
+QToolButton#samAction:checked {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #f03e3e, stop:1 #e03131);
+    border: 2px solid #c92a2a;
+    color: white;
+    font-weight: bold;
+}
+QToolButton#samAction:checked:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #fa5252, stop:1 #e03131);
+}
+QDockWidget {
+    font-weight: bold;
+    color: #343a40;
+}
+QDockWidget::title {
+    background: #ffffff;
+    padding: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+QListWidget {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+}
+QListWidget::item:selected {
+    background-color: #e7f5ff;
+    color: #1c7ed6;
+    border-left: 3px solid #1c7ed6;
+}
+QGraphicsView {
+    background-color: #e9ecef;
+    border: none;
+}
+QLineEdit, QPushButton {
+    padding: 6px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: white;
+}
+QPushButton:hover {
+    background: #f8f9fa;
+}
