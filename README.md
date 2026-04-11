@@ -40,12 +40,65 @@
 
 ### 1. 环境依赖
 
-
 推荐使用 Python 3.10+。首先安装必要的 Python 依赖包：
 
-单独安装 torch>=2.5.0
+单独安装 torch>=2.5.0，pytorch 官网地址： [https://pytorch.org/](https://pytorch.org/get-started/previous-versions/?_gl=1*r08hqw*_up*MQ..*_ga*MTg1ODQzMTE5LjE3NzU4ODk5NDI.*_ga_469Y0W5V62*czE3NzU4ODk5NDEkbzEkZzAkdDE3NzU4ODk5NDEkajYwJGwwJGgw/)
+![在这里插入图片描述](assets/img_9.png)
 
-之后使用下面命令安装所需的库
+**💡 PyTorch 安装注意事项（新手必看）**
+
+在进行安装 PyTorch 之前，请大家务必核对以下几点，避免安装后运行报错：
+
+**1. 确认显卡支持与 CUDA 版本（极其重要）**
+* **适用系统**：本教程基于 Windows 环境。
+* **如何查看**：按下 `Win + R` 键，输入 `cmd` 打开命令提示符，输入 `nvidia-smi` 并回车。在弹出的表格右上角，找到 **CUDA Version**。
+![在这里插入图片描述](assets/img_8.png)
+
+* **版本匹配要求**：你下载的 PyTorch CUDA 版本（例如命令中的 `cu118` 或 `cu116`），**必须小于或等于**你电脑刚刚查到的 CUDA Version。如果你的电脑没有独立 N 卡，或者查不到该信息，请到官网选择 **CPU 版本**的安装命令。
+
+
+**2. Conda 与 Pip 命令二选一即可**
+
+
+根据自己电脑安装指定版本，安装命令如下，如果你使用 `conda` 命令卡住，可以尝试先在终端配置好国内的清华/中科大 conda 镜像源，然后再删掉命令后面的 `-c pytorch -c nvidia`（因为带上 `-c` 会强制去国外官方频道下载）：
+
+
+```bash
+conda install pytorch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0  pytorch-cuda=11.8 -c pytorch -c nvidia
+```
+
+上面的命令，大多数情况下是安装失败的，所以这里推荐使用阿里云镜像源安装，阿里云上镜像，pytorch gpu版的 whl 包可以在此链接查看：链接: [https://mirrors.aliyun.com/pytorch-wheels](https://mirrors.aliyun.com/pytorch-wheels/)
+
+后面 cu 版本需要对应cuda 的版本号，例如安装 cuda11.8 就写  cu118
+
+```bash
+-f  https://mirrors.aliyun.com/pytorch-wheels/cu118
+```
+cuda11.8 安装命令：
+```bash
+pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 -f  https://mirrors.aliyun.com/pytorch-wheels/cu118
+```
+cuda12.1 安装命令：
+
+```bash
+pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 -f  https://mirrors.aliyun.com/pytorch-wheels/cu121
+```
+
+**3. 验证是否安装成功**
+安装进度条跑完后，不要急着关掉窗口！在终端里输入 `python` ，输入以下代码：
+```python
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())
+print(torch.cuda.device_count())
+print(f"CUDA：{torch.version.cuda}")
+```
+如果输出了 `True`，恭喜你，cuda 可用！如果输出 `False`，说明装成了 CPU 版本或者 CUDA 不匹配，可能需要卸载重装。
+
+---
+
+
+之后在自己的虚拟环境下，使用下面命令安装所需的库
 
 ```
 pip install -r requirements.txt
@@ -54,6 +107,11 @@ pip install -r requirements.txt
 >注：如果你需要使用 SAM3 的智能辅助功能，请确保你的环境中已经正确配置了 `sam3` 相关的库及其依赖。
 
 ### 2. 模型下载与配置
+
+sam3 官方源码地址: [https://github.com/facebookresearch/sam3](https://github.com/facebookresearch/sam3/)
+
+sam3.pt 官方权重下载地址: [https://huggingface.co/facebook/sam3/tree/main](https://huggingface.co/facebook/sam3/tree/main/)
+![在这里插入图片描述](assets/img_7.png)
 
 为了启用 AI 智能标注，你需要下载 SAM3 模型权重文件（ `sam3.pt`）。
 
@@ -129,11 +187,7 @@ python main.py
 
 #### 1. OBB 极坐标逆向计算与旋转拉伸 
 
-传统 QGraphicsItem 旋转后会导致坐标系错乱。本系统**废弃了默认的拖拽属性**，全面接管了底层的 `mouseMoveEvent`。
-
-在 `handle_dragged` 中，系统将鼠标全局坐标映射回框体的局部坐标 (`mapFromScene`)。拉伸上下左右胶囊时，不仅改变 `box_w/box_h`，更利用 `mapToScene` 计算出中心点在拉伸后的真实世界偏移量（`scene_offset`），实现了完美的“锚点固定拉伸”。旋转则使用了极坐标系计算：
-
-Python
+在 `handle_dragged` 中，系统将鼠标全局坐标映射回框体的局部坐标 (`mapFromScene`)。拉伸上下左右胶囊时，不仅改变 `box_w/box_h`，利用 `mapToScene` 计算出中心点在拉伸后的真实世界偏移量（`scene_offset`），实现了“锚点固定拉伸”。旋转则使用了极坐标系计算：
 
 ```
 angle_deg = math.degrees(math.atan2(dy, dx))
@@ -142,7 +196,7 @@ self.setRotation(angle_deg + 90)
 
 #### 2. 时光机状态快照引擎 
 
-为了避免复杂的对象深拷贝，系统采用了**“数据快照（State Snapshotting）”**模式。
+为了避免复杂的对象深拷贝，系统采用了**数据快照**模式。
 
 每当画布发生 `state_changed` 信号（画完、删除、松开手柄），系统会直接调用 `Exporter.extract_shapes` 将画布的物理状态榨取成纯粹的 Dict 数据存入栈中。并自带 JSON 字符串去重比对，防止用户无意义的点击消耗堆栈内存。
 
@@ -156,7 +210,7 @@ self.setRotation(angle_deg + 90)
 
 ## 🚧 存在不足
 
-LuoHuaLabel 目前作为一个由个人开发者主导的开源项目，虽然核心的标注流、数据清洗以及 SAM3 智能引擎均已跑通并验证可行，但受限于个人精力与测试环境，系统仍存在一些不完善之处。
+LuoHuaLabel 虽然核心的标注流、数据清洗以及 SAM3 智能引标注已跑通并验证可行，但受限于个人精力与测试环境，系统仍存在一些不完善之处。
 
 1. **潜在的边缘 Bug**：在极高频的快捷键切换、或极端形变的旋转框（OBB）物理碰撞测试中，偶尔可能出现图层刷新延迟或极小概率的坐标精度溢出问题。
 2. **大尺度图像性能瓶颈**：目前画板基于 PySide6 的 `QGraphicsScene` 构建。在载入超大分辨率图片（如 4K 乃至 8K 无人机遥感图）并叠加成百上千个多边形掩码时，缩放和拖拽的帧率可能会有所下降。
