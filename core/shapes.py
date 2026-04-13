@@ -484,7 +484,6 @@ class OBBHandle(QGraphicsItem):
         super().__init__(parent)
         self.handle_type = handle_type  # 'top', 'bottom', 'left', 'right', 'rotate'
         self.setAcceptHoverEvents(True)
-        # 🟢 核心修复：移除 ItemIsMovable！我们完全接管底层拖拽计算，防止坐标系错乱
         self.setZValue(100)
 
         self.w, self.h = 0, 0
@@ -508,7 +507,6 @@ class OBBHandle(QGraphicsItem):
             painter.drawRoundedRect(self.boundingRect(), min(self.w, self.h) / 2, min(self.w, self.h) / 2)
 
     def hoverEnterEvent(self, event):
-        # 🟢 核心修复：统一使用十字光标进行拉伸，避免旋转后光标方向(上下/左右)产生视觉错位
         if self.handle_type == 'rotate':
             self.setCursor(Qt.OpenHandCursor)
         else:
