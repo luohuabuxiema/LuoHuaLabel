@@ -8,10 +8,8 @@ scipy~=1.15.3
 tqdm~=4.67.1
 iopath~=0.1.10
 matplotlib~=3.10.8
-triton~=2.1.0
 timm~=1.0.26
 ftfy~=6.3.1
-regex~=2026.2.28
 psutil~=7.2.1
 torchmetrics~=1.5.0
 omegaconf~=2.3.0
@@ -19,6 +17,8 @@ numba~=0.64.0
 huggingface-hub~=0.36.2
 pandas~=2.3.3
 scikit-learn~=1.8.0
-sam3
+setuptools==79.0.1
+git+https://github.com/facebookresearch/sam3.git
+
 
 # python 版本是3.11 torch 版本是2.5.0+cu118
