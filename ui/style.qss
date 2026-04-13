@@ -74,3 +74,13 @@ QLineEdit, QPushButton {
 QPushButton:hover {
     background: #f8f9fa;
 }
+QListWidget QLineEdit {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #409eff;  /* 亮蓝色的边框 */
+    border-radius: 2px;
+    padding: 1px 4px;
+    margin: 0px;                /* 外边距 */
+    font-size: 13px;
+    min-height: 20px;           /* 最小高度 */
+}

@@ -2,7 +2,7 @@ import subprocess
 import sys
 import os
 import json
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QInputDialog, QMessageBox, QLabel
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QInputDialog, QMessageBox, QLabel, QListWidgetItem
 from PySide6.QtCore import Qt, QPointF, QRectF
 from PySide6.QtGui import QPolygonF
 from ui.main_window import Ui_MainWindow
@@ -79,7 +79,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.scene.shape_double_clicked.connect(self.edit_shape_label)  # 双击修改
 
+        self.listClasses.itemChanged.connect(self.on_list_item_changed)
+
         self.btnHelp.clicked.connect(self.show_help_dialog)
+
+    def add_class_to_list(self, cls_name):
+        """列表项支持双击编辑"""
+        if cls_name not in self.class_list:
+            self.class_list.append(cls_name)
+            item = QListWidgetItem(cls_name)
+            # 开启双击编辑权限
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            item.setData(Qt.UserRole, cls_name)
+            self.listClasses.addItem(item)
 
     def push_state(self):
         """把当前画布状态拍个快照，存进撤销堆栈"""
@@ -103,20 +115,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def undo(self):
         """撤销 (Ctrl+Z)"""
         if len(self.undo_stack) > 1:
-            # 1. 把现在的状态拿出来，放到重做栈里去
+            # 把现在的状态拿出来，放到重做栈里去
             current_state = self.undo_stack.pop()
             self.redo_stack.append(current_state)
-            # 2. 获取上一步的状态并还原
+            # 获取上一步的状态并还原
             previous_state = self.undo_stack[-1]
             self.restore_state(previous_state)
 
     def redo(self):
         """重做/前进 (Ctrl+Y 或 Ctrl+Shift+Z)"""
         if self.redo_stack:
-            # 1. 从重做栈里拿出来，塞回撤销栈
+            # 从重做栈里拿出来，塞回撤销栈
             next_state = self.redo_stack.pop()
             self.undo_stack.append(next_state)
-            # 2. 还原该状态
+            # 还原该状态
             self.restore_state(next_state)
 
     def restore_state(self, state):
@@ -129,8 +141,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # 同步类别列表
             if label and label not in self.class_list:
-                self.class_list.append(label)
-                self.listClasses.addItem(label)
+                # self.class_list.append(label)
+                # self.listClasses.addItem(label)
+                self.add_class_to_list(label)
                 self.save_classes()
 
             shape = None
@@ -191,8 +204,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpLabel.setStyleSheet("color: green;")
 
         if prompt_text not in self.class_list:
-            self.class_list.append(prompt_text)
-            self.listClasses.addItem(prompt_text)
+            # self.class_list.append(prompt_text)
+            # self.listClasses.addItem(prompt_text)
+            self.add_class_to_list(prompt_text)
             self.save_classes()
 
         for res in results:
@@ -234,7 +248,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             <li><b>左键点击</b>：添加顶点</li>
             <li><b>Ctrl + Z</b>：撤销上一个顶点</li>
             <li><b>双击 / Enter</b>：闭合多边形</li>
-            
+
         </ul>
         <hr>
         <h3>【旋转框绘制快捷键】</h3>
@@ -313,8 +327,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 for line in f:
                     cls_name = line.strip()
                     if cls_name:
-                        self.class_list.append(cls_name)
-                        self.listClasses.addItem(cls_name)
+                        self.add_class_to_list(cls_name)
+                        # self.class_list.append(cls_name)
+                        # self.listClasses.addItem(cls_name)
 
     def save_classes(self):
         if self.current_dir:
@@ -336,8 +351,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if ok and cls_name:
             cls_name = cls_name.strip()
             if cls_name not in self.class_list:
-                self.class_list.append(cls_name)
-                self.listClasses.addItem(cls_name)
+                # self.class_list.append(cls_name)
+                # self.listClasses.addItem(cls_name)
+                self.add_class_to_list(cls_name)
                 self.save_classes()
 
             shape.label = cls_name
@@ -365,8 +381,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if ok and cls_name:
             cls_name = cls_name.strip()
             if cls_name not in self.class_list:
-                self.class_list.append(cls_name)
-                self.listClasses.addItem(cls_name)
+                # self.class_list.append(cls_name)
+                # self.listClasses.addItem(cls_name)
+                self.add_class_to_list(cls_name)
                 self.save_classes()
 
             # 更新形状的数据和标签显示
@@ -377,6 +394,53 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 修改完自动保存一次
             self.auto_save_annotation()
             self.push_state()
+
+    def on_list_item_changed(self, item):
+        """处理右侧列表双击修改类别名的全局涟漪效应"""
+        new_name = item.text().strip()
+        old_name = item.data(Qt.UserRole)
+
+        # 如果没有真正改动，直接跳过
+        if not old_name or new_name == old_name:
+            return
+
+        self.listClasses.blockSignals(True)
+        try:
+            if not new_name:
+                DialogOver(self, "类别名不能为空！", "名称错误", "warning")
+                item.setText(old_name)
+                return
+
+            if new_name in self.class_list:
+                DialogOver(self, f"类别名 '{new_name}' 已存在！", "名称冲突", "warning")
+                item.setText(old_name)
+                return
+
+            # 替换内部字典
+            idx = self.class_list.index(old_name)
+            self.class_list[idx] = new_name
+            item.setData(Qt.UserRole, new_name)  # 把新名字设为基准
+
+            # 遍历画板，把所有旧名字的框换成新名字
+            changed = False
+            for shape in self.scene.items():
+                if isinstance(shape, (RectShape, PolyShape, PointShape, RotatedRectShape)):
+                    if getattr(shape, 'label', '') == old_name:
+                        shape.label = new_name
+                        if hasattr(shape, 'update_label_text'):
+                            shape.update_label_text(new_name)
+                        changed = True
+
+            # 保存并推入时光机
+            self.save_classes()
+            if changed:
+                self.auto_save_annotation()
+                self.push_state()
+
+            DialogOver(self, f"已将所有的 '{old_name}' 批量变更为 '{new_name}'", "修改成功", "success")
+
+        finally:
+            self.listClasses.blockSignals(False)
 
     def open_dir(self):
         dir_path = QFileDialog.getExistingDirectory(self, "选择图片目录")
@@ -493,8 +557,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _add_shape_to_scene(self, shape, label):
         """往画板内添加加载出来的轮廓并同步历史类别"""
         if label not in self.class_list:
-            self.class_list.append(label)
-            self.listClasses.addItem(label)
+            # self.class_list.append(label)
+            # self.listClasses.addItem(label)
+            self.add_class_to_list(label)
             self.save_classes()
         self.scene.addItem(shape)
 
@@ -577,6 +642,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self._add_shape_to_scene(shape, label)
         except Exception as e:
             print(f"加载 YOLO 标注失败: {e}")
+
     def _load_xml(self, xml_path):
         import xml.etree.ElementTree as ET
         if not os.path.exists(xml_path): return
