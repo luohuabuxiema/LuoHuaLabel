@@ -5,3 +5,5 @@ sam3/
 
 # 忽略 Python 缓存文件
 __pycache__/
+
+yolotest/
