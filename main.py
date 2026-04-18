@@ -1,10 +1,11 @@
-import subprocess
 import sys
 import os
 import json
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QInputDialog, QMessageBox, QLabel, QListWidgetItem
 from PySide6.QtCore import Qt, QPointF, QRectF
 from PySide6.QtGui import QPolygonF
+
+from main_dataset_tool import DatasetToolWindow
 from ui.main_window import Ui_MainWindow
 from core.canvas import Canvas, CanvasMode
 from core.sam_client import SAMClient
@@ -175,12 +176,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def open_dataset_tool(self):
         try:
-            tool_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "main_dataset_tool.py")
-            subprocess.Popen([sys.executable, tool_path])
+            if not hasattr(self, 'dataset_window') or self.dataset_window is None:
+                self.dataset_window = DatasetToolWindow()
+            # 显示窗口
+            self.dataset_window.show()
+            # 把窗口强制拉到最前面
+            self.dataset_window.raise_()
+            self.dataset_window.activateWindow()
 
-            DialogOver(self, "数据集处理系统已在独立窗口运行，互不干扰", "启动成功", "success")
         except Exception as e:
-            DialogOver(self, f"启动子系统失败: {e}", "系统错误", "danger")
+            DialogOver(self, f"启动失败: {e}", "系统错误", "danger")
 
     def trigger_sam_prompt(self):
         if self.scene.mode == CanvasMode.POINT:

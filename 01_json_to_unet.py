@@ -52,7 +52,7 @@ def generate_mask(json_path, class_mapping):
             x2, y2 = pts[1]
             cv2.rectangle(mask, (x1, y1), (x2, y2), class_id, thickness=-1)  # -1 表示实心填充
 
-        # 处理多边形和旋转框 (OBB在你的新代码中已经转为了4点多边形)
+        # 处理多边形和旋转框
         elif shape_type in ['polygon', 'obb'] and len(pts) >= 3:
             cv2.fillPoly(mask, [pts], class_id)
 
