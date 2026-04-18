@@ -22,15 +22,15 @@ class FormatSelectorWidget(QWidget):
             QPushButton {
                 background-color: transparent;
                 border: 1px solid transparent;
-                color: #333333;
+                color: #F8FAFC;
                 font-size: 14px;
                 font-weight: bold;
                 padding: 6px 10px;
-                border-radius: 4px;
+                border-radius: 8px;
             }
             QPushButton:hover {
-                background-color: #e3f2fd;
-                color: #2196F3;
+                background-color: #1E293B;
+                color: #22C55E;
             }
             QPushButton::menu-indicator {
                 image: none; /* 强制隐藏默认箭头 */
@@ -43,8 +43,8 @@ class FormatSelectorWidget(QWidget):
         self.menu.setAttribute(Qt.WA_TranslucentBackground)
         self.menu.setStyleSheet("""
             QMenu {
-                background-color: #ffffff;
-                border: 1px solid #ebeef5;
+                background-color: #0F172A;
+                border: 1px solid #334155;
                 border-radius: 8px;
                 padding: 6px 0px;
             }
@@ -52,13 +52,13 @@ class FormatSelectorWidget(QWidget):
                 padding: 8px 36px 8px 32px;
                 margin: 2px 6px;
                 border-radius: 4px;
-                color: #606266;
+                color: #cbd5e1;
                 font-size: 13px;
                 font-family: "Microsoft YaHei", sans-serif;
             }
             QMenu::item:selected {
-                background-color: #ecf5ff;
-                color: #409eff;
+                background-color: #1E293B;
+                color: #22C55E;
                 font-weight: bold;
             }
         """)
@@ -75,7 +75,7 @@ class FormatSelectorWidget(QWidget):
 
         self.label = QLabel("标注格式")
         self.label.setAlignment(Qt.AlignCenter)
-        self.label.setStyleSheet("font-size: 11px; color: #888888; margin-top: 2px;")
+        self.label.setStyleSheet("font-size: 11px; color: #94A3B8; margin-top: 2px;")
 
         layout.addWidget(self.btn)
         layout.addWidget(self.label)
@@ -126,9 +126,9 @@ class SwitchControl(QWidget):
         rect = QRect(0, 0, self.width(), self.height())
 
         if self._checked:
-            p.setBrush(QColor("#2196F3"))
+            p.setBrush(QColor("#22C55E"))
         else:
-            p.setBrush(QColor("#BDBDBD"))
+            p.setBrush(QColor("#334155"))
 
         p.setPen(Qt.NoPen)
         p.drawRoundedRect(rect, 13, 13)
@@ -200,14 +200,14 @@ class Ui_MainWindow(object):
         self.btnDatasetTool = QPushButton("数据集处理")
         self.btnDatasetTool.setStyleSheet("""
             QPushButton {
-                background-color: #67c23a;
-                color: white;
+                background-color: #22C55E;
+                color: #020617;
                 border: none;
                 border-radius: 6px;
                 padding: 10px;
                 font-weight: bold;
             }
-            QPushButton:hover { background-color: #85ce61; }
+            QPushButton:hover { background-color: #4ade80; }
         """)
 
         self.centralWidget = QWidget(MainWindow)
@@ -274,20 +274,20 @@ class Ui_MainWindow(object):
 
         self.btnHelp.setStyleSheet("""
                     QPushButton {
-                        background-color: transparent; /* 背景透明更柔和 */
-                        border: 2px solid #dcdcdc;
-                        border-radius: 11px; /* 完美圆形 */
-                        color: #a0a0a0;
+                        background-color: transparent;
+                        border: 2px solid #334155;
+                        border-radius: 11px;
+                        color: #94A3B8;
                         padding: 0px;
                         margin: 0px;
                     }
                     QPushButton:hover {
-                        border: 2px solid #2196F3;
-                        color: #2196F3;
-                        background-color: #f0f8ff;
+                        border: 2px solid #22C55E;
+                        color: #22C55E;
+                        background-color: #1E293B;
                     }
                     QPushButton:pressed {
-                        background-color: #e3f2fd;
+                        background-color: #0F172A;
                     }
                 """)
         helpLayout.addWidget(self.btnHelp)
@@ -298,15 +298,15 @@ class Ui_MainWindow(object):
         self.samPromptInput.setPlaceholderText("输入提示词提取 (如: dog)")
         self.samPromptInput.setStyleSheet("""
                     QLineEdit {
-                        border: 2px solid #e0e0e0;
+                        border: 2px solid #334155;
                         border-radius: 14px;
                         padding: 6px 14px;
                         font-size: 13px;
-                        background-color: #ffffff;
-                        color: #333333;
+                        background-color: #0F172A;
+                        color: #F8FAFC;
                     }
                     QLineEdit:focus {
-                        border: 2px solid #2196F3;
+                        border: 2px solid #22C55E;
                     }
                 """)
 
@@ -314,8 +314,8 @@ class Ui_MainWindow(object):
         self.samPromptBtn.setCursor(Qt.PointingHandCursor)
         self.samPromptBtn.setStyleSheet("""
                     QPushButton {
-                        background-color: #2196F3;
-                        color: white;
+                        background-color: #22C55E;
+                        color: #020617;
                         border: none;
                         border-radius: 14px;
                         padding: 8px;
@@ -323,10 +323,10 @@ class Ui_MainWindow(object):
                         font-size: 13px;
                     }
                     QPushButton:hover {
-                        background-color: #1976D2;
+                        background-color: #4ade80;
                     }
                     QPushButton:pressed {
-                        background-color: #0D47A1;
+                        background-color: #16a34a;
                     }
                 """)
 
@@ -365,6 +365,7 @@ class Ui_MainWindow(object):
 
         self.toolBar.addSeparator()
         self.samWidget = QWidget()
+        self.samWidget.setStyleSheet("background-color: transparent;")
         samLayout = QVBoxLayout(self.samWidget)
         samLayout.setContentsMargins(5, 10, 5, 10)
         samLayout.setAlignment(Qt.AlignCenter)
@@ -372,7 +373,7 @@ class Ui_MainWindow(object):
         self.samSwitch = SwitchControl()
         self.samLabel = QLabel("SAM 智能辅助")
         self.samLabel.setAlignment(Qt.AlignCenter)
-        self.samLabel.setStyleSheet("font-size: 11px; color: #555; margin-top: 5px;")
+        self.samLabel.setStyleSheet("font-size: 11px; color: #94A3B8; margin-top: 5px;")
 
         samLayout.addWidget(self.samSwitch, alignment=Qt.AlignCenter)
         samLayout.addWidget(self.samLabel, alignment=Qt.AlignCenter)
@@ -387,24 +388,24 @@ class Ui_MainWindow(object):
         self.btnDatasetTool.setCursor(Qt.PointingHandCursor)
         self.btnDatasetTool.setStyleSheet("""
                     QPushButton {
-                        background-color: #f4f4f5;
-                        color: #606266;
-                        border: 1px solid #dcdfe6;
+                        background-color: #0F172A;
+                        color: #94A3B8;
+                        border: 1px solid #334155;
                         border-radius: 6px;
                         padding: 10px 5px;
-                        margin: 10px 8px; /* 左右留边距，不贴死边框 */
+                        margin: 10px 8px;
                         font-weight: bold;
                         font-size: 13px;
                         font-family: "Microsoft YaHei";
                     }
                     QPushButton:hover {
-                        background-color: #ecf5ff;
-                        color: #409eff;
-                        border-color: #c6e2ff;
+                        background-color: #1E293B;
+                        color: #22C55E;
+                        border-color: #22C55E;
                     }
                     QPushButton:pressed {
-                        background-color: #3a8ee6;
-                        color: white;
+                        background-color: #16a34a;
+                        color: #020617;
                     }
                 """)
         self.toolBar.addWidget(self.btnDatasetTool)
